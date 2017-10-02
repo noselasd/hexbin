@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+  <style>
+  @media (min-width: 1200px) {
+    .container{
+        max-width: 970px;
+        
+    }
+    .hexhelp {
+        font-family: monospace;
+        line-height: 1em;
+        padding-left: 0;
+    }
+    h1 {
+        color: rgb(73, 80, 87);
+    }
+    .col-centered{
+    float: none;
+    margin: 0 auto;
+    }
+}
+</style>
+  </head>
+  <body>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 input-group-addon"> <h1 class="col-centered">Converter</h1></div>
+        </div>
+        <div class="row">
+        <div class="col-sm-12">
+
+        <form>
+            <div class="form-group">
+                <div class="row">
+                    <label class="input-group-addon col-sm-2" for="hexinput">Hex</label>
+                    <input type="text" class="col-sm-10 form-control" id="hexinput" placeholder="Hex value">
+                </div>
+                <div class="row">
+                    <label class="input-group-addon col-sm-2" for="decinput">Decimal</label>
+                    <input type="text" class="col-sm-10 form-control" id="decinput" placeholder="Decimal value">
+                </div>
+                <div class="row">
+                    <label class="input-group-addon col-sm-2" for="octinput">Octal</label>
+                    <input type="text" class="col-sm-10 form-control" id="octinput" placeholder="Octal value">
+                </div>
+                <div class="row">
+                    <label class="input-group-addon col-sm-2" for="bininput">Binary</label>
+                    <input type="text" class="col-sm-10 form-control" id="bininput" placeholder="Binary value">
+                </div>
+            </div>
+        </form>
+        </div>
+        </div>
+        <div class="row">
+        <div class="col-sm-6 hexhelp">
+            <div class="row"> 
+            <div class="col-sm-4"> 
+                0 0 0 0 | 0x0</span>
+            </div>
+            <div class="col-sm-8"> 
+                1 0 0 0 | 0x8 
+            </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                0 0 0 1 | 0x1
+                </div>
+                <div class="col-sm-8">
+                1 0 0 1 | 0x9
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                0 0 1 0 | 0x2  
+                </div>
+                <div class="col-sm-8">
+                1 0 1 0 | 0xA
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                0 0 1 1 | 0x3
+                </div>
+                <div class="col-sm-8">
+                1 0 1 1 | 0xB
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                0 1 0 0 | 0x4
+                </div>
+                <div class="col-sm-8">
+                1 1 0 0 | 0xC
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                0 1 0 1 | 0x5
+                </div>
+                <div class="col-sm-8">
+                1 1 0 1 | 0xD
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                0 1 1 0 | 0x6
+                </div>
+                <div class="col-sm-8">
+                1 1 1 0 | 0xE
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                0 1 1 1 | 0x7
+                </div>
+                <div class="col-sm-8">
+                1 1 1 1 | 0xF
+                </div>
+            </div>
+            </div>
+            <div class="col-sm-6"></div>
+
+        </div>
+  </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" crossorigin="anonymous"></script>
+    <script src="bignumber.min.js" crossorigin="anonymous"></script>
+    <script>
+
+    function inputRestrict(e, elm, regex) {
+        var ctrl = e.ctrlKey || e.metaKey;
+        var val = elm.val() + String.fromCharCode(e.which);
+        if(!regex.test(val) && e.which >= 0x20 && !ctrl) {
+            e.preventDefault();
+        }
+    }
+    
+    function lpad(s, l, c) {
+        while (l --) {
+            s = c + s;
+        }
+
+        return s;
+    }
+
+    function setvalue(inputs, input) {
+        var val = input.elm.val().replace(/ /g,'');
+        $.each(inputs, function(i, v) {
+            if (v.elm != input.elm) {
+                var strNum;
+                try {
+                    strNum = !val ? "" : new BigNumber(val, input.base).toString(v.base);
+                } catch (e) {
+                    strNum = "";
+                }
+                if (v.group) {
+                    if (strNum.length % 4 != 0) {
+                        strNum = lpad(strNum, 4 - strNum.length % 4, "0");
+                    }
+                    strNum = strNum.replace(/(.{4})/g, "$1 ");
+                }
+                v.elm.val(strNum);
+            }
+        });
+        
+    }
+    $(document).ready(function () {
+        var inputs = [
+            {"elm": $("#decinput"), "mask": /^[0-9 ]*$/,                 "base": 10} ,
+            {"elm": $("#hexinput"), "mask": /^(?:0[xX])?[0-9a-fA-F ]*$/, "base": 16},
+            {"elm": $("#octinput"), "mask": /^[0-7 ]*$/,                 "base": 8},
+            {"elm": $("#bininput"), "mask": /^[01 ]*$/,                  "base": 2, "group": true},
+            
+        ];
+        
+        $.each(inputs, function(i, v) {
+            v.elm.keypress(function (e) {
+                inputRestrict(e, v.elm, v.mask);
+            });
+
+
+        v.elm.keyup(function () {
+            setvalue(inputs, v);
+        });
+        
+        });
+
+
+    });
+
+
+
+    </script>
+  </body>
+</html>
